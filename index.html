@@ -5,6 +5,22 @@
     <meta name="google-site-verification" content="TGqBnRYqfOsJT9incb98ZTGuFyj1Tn6gQ1bVoPY7b_g" />
    </head>
    <body>
-    <h2>Página web en construcción</h2>
-   </body>
+     <h2>Página web en construcción</h2>
+     <script type="module">
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
+       import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-analytics.js";
+       const firebaseConfig = {
+         apiKey: "AIzaSyDw4kBHlKqI1WvLoa7hUpKwhfyYRUxBowU",
+         authDomain: "apps-rdp.firebaseapp.com",
+         databaseURL: "https://apps-rdp-default-rtdb.firebaseio.com",
+         projectId: "apps-rdp",
+         storageBucket: "apps-rdp.appspot.com",
+         messagingSenderId: "275503181025",
+         appId: "1:275503181025:web:6f4cc6656ac2761a4b1ba0",
+         measurementId: "G-S23T8K0DVR"
+       };
+       const app = initializeApp(firebaseConfig);
+       const analytics = getAnalytics(app);
+     </script>
+  </body>
 </html>
