@@ -1,0 +1,157 @@
+<?php
+session_name("session_id");
+session_start();
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<style>
+			button{
+				cursor:pointer;
+			}
+			#loging_div{
+				margin:auto;
+				border:2px solid #4fffff;
+				padding:20px;
+				width:300px;
+				border-radius:20px;
+			}
+			#register_div{
+				display:none;
+				margin:auto;
+				border:2px solid #4fffff;
+				padding:20px;
+				width:300px;
+				border-radius:20px;
+			}
+			form input{
+				width:280px;
+				height:40px;
+				margin-bottom:30px;
+			}
+			form button{
+				width:120px;
+				height:40px;
+				background-color:#4fffff;
+			}
+			.button_div{
+				cursor:pointer;
+			}
+			form button:hover{
+				box-shadow:1px 1px 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="loging_div">
+			<div id="loging_with_email_div">
+				<form id="loging_form" method="POST">
+					<input type="email" name="email" placeholder="Email">
+					<input type="password" name="password" placeholder="Contraseña">
+					<button type="submit">Iniciar sesión</button>
+					<div style="border:1px solid #dedede;margin-top:20px;margin-bottom:20px;"></div>
+					<div id="loging_with_google_btn" class="button_div" style="text-align:center;"><img id="google_auth_img" width="260px" height="60px" src="https://apps-rdp.000webhostapp.com/img/btn_google_signin_dark_normal_web@2x.png"></div>
+					<p>¿No tienes cuenta? <a href="#" onclick="document.querySelector('#loging_div').style.display='none';document.querySelector('#register_div').style.display='block';">Regístrate</a></p>
+				</form>
+			</div>
+		</div>
+		<div id="register_div">
+			<div id="register_with_email_div">
+				<form id="register_form" method="POST">
+					<input type="email" name="email" placeholder="Email">
+					<input type="password" name="password" placeholder="Contraseña">
+					<button type="submit">Registrarme</button>
+				</form>
+			</div>
+		</div>
+		<script type="module">
+			import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
+			import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-analytics.js";
+			import { getDatabase,ref,onValue } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js";
+			import {
+				getAuth,
+				GoogleAuthProvider,
+				signInWithEmailAndPassword,
+				onAuthStateChanged,
+				createUserWithEmailAndPassword,
+				signInWithPopup
+			} from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"
+			var usuario;
+			const firebaseConfig = {
+				apiKey: "AIzaSyDw4kBHlKqI1WvLoa7hUpKwhfyYRUxBowU",
+				authDomain: "apps-rdp.firebaseapp.com",
+				projectId: "apps-rdp",
+				storageBucket: "apps-rdp.appspot.com",
+				messagingSenderId: "275503181025",
+				appId: "1:275503181025:web:29935b20790866a84b1ba0",
+				measurementId: "G-HY8E1XYNCP"
+			};
+			const app = initializeApp(firebaseConfig);
+			const analytics = getAnalytics(app);
+			const auth=getAuth();
+			onAuthStateChanged(auth,function(user){
+				if(user){
+					usuario=user;
+					document.location.href="account.php";
+				}
+				else{
+					usuario=null;
+				}
+			});
+			const db=getDatabase();
+			const starCountRef=ref(db,"config/loging");
+			onValue(starCountRef,function(snapshot){
+				const data=snapshot.val();
+				if(data!=true){
+					document.write("<p style='font-size:20px;'>Error. No disponible. Puede ser que la web se esté actualizando. ¡Vuelve pronto!</p>");
+				}
+			});
+			document.getElementById("loging_form").addEventListener("submit",function(e){
+				e.preventDefault();
+				var email=this.querySelector("input[name='email']").value;
+				var password=this.querySelector("input[name='password']").value;
+				signInWithEmailAndPassword(auth,email,password).then(function(userCredential){
+					const user=userCredential.user;
+				}).catch(function(error){
+					const errorCode=error.code;
+					const errorMessage=error.message;
+					alert(errorMessage);
+				});
+			});
+			document.getElementById("register_form").addEventListener("submit",function(e){
+				e.preventDefault();
+				var email=this.querySelector("input[name='email']").value;
+				var password=this.querySelector("input[name='password']").value;
+				createUserWithEmailAndPassword(auth,email,password).then((userCredential) => {
+					const user = userCredential.user;
+				}).catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					alert(errorMessage);
+				});
+			});
+			document.getElementById("loging_with_google_btn").addEventListener("click",function(){
+				const provider=new GoogleAuthProvider();
+				signInWithPopup(auth,provider).then(function(result){
+					const credential=GoogleAuthProvider.credentialFromResult(result);
+					const token=credential.accessToken;
+					const user=result.user;
+				}).catch(function(error){
+					const errorMessage=error.message;
+					const credential=GoogleAuthProvider.credentialFromError(error);
+					alert(errorMessage);
+				});
+			});
+		</script>
+		<script type="text/javascript">
+			var loging_with_google_btn=document.getElementById("loging_with_google_btn");
+			loging_with_google_btn.onmouseenter=function(){
+				this.querySelector("img").src="https://apps-rdp.000webhostapp.com/img/btn_google_signin_dark_focus_web@2x.png";
+			};
+			loging_with_google_btn.onmouseleave=function(){
+				this.querySelector("img").src="https://apps-rdp.000webhostapp.com/img/btn_google_signin_dark_normal_web@2x.png";
+			};
+		</script>
+	</body>
+</html>

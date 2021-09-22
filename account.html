@@ -1,0 +1,91 @@
+<?php
+session_name("session_id");
+session_start();
+?>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            #account{
+                margin:auto;
+                border:2px solid #4fffff;
+                border-radius:20px;
+                width:400px;
+                padding:20px;
+            }
+            #account_info_div{
+                width:300px;
+                height:100px;
+                border-radius:10px;
+                padding:10px;
+                border:2px solid;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="account">
+            <img id="account_img" style="border-radius:100%;width:50px;">
+            <div id="account_info_div" style="display:none;"></div>
+            <a id="account_name"></a>
+        </div>
+        <script type="module">
+			import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
+			import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-analytics.js";
+			import { getDatabase,ref,onValue } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js";
+			import {
+				getAuth,
+				GoogleAuthProvider,
+				signInWithEmailAndPassword,
+				onAuthStateChanged,
+				createUserWithEmailAndPassword,
+				signInWithPopup
+			} from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"
+			var usuario;
+			const firebaseConfig = {
+				apiKey: "AIzaSyDw4kBHlKqI1WvLoa7hUpKwhfyYRUxBowU",
+				authDomain: "apps-rdp.firebaseapp.com",
+				projectId: "apps-rdp",
+				storageBucket: "apps-rdp.appspot.com",
+				messagingSenderId: "275503181025",
+				appId: "1:275503181025:web:29935b20790866a84b1ba0",
+				measurementId: "G-HY8E1XYNCP"
+			};
+			const app = initializeApp(firebaseConfig);
+			const analytics = getAnalytics(app);
+			const auth=getAuth();
+			onAuthStateChanged(auth,function(user){
+				if(user){
+					usuario=user;
+					configureAccountDiv(user);
+				}
+				else{
+					usuario=null;
+					document.location.href="loging.php";
+				}
+			});
+			const db=getDatabase();
+			const starCountRef=ref(db,"config/loging");
+			onValue(starCountRef,function(snapshot){
+				const data=snapshot.val();
+				if(data!=true){
+					document.write("<p style='font-size:20px;'>Error. No disponible. Puede ser que la web se esté actualizando. ¡Vuelve pronto!</p>");
+				}
+			});
+			function configureAccountDiv(user){
+			    var account_img=document.getElementById("account_img");
+			    account_img.src=user.photoURL;
+			    account_img.title=user.displayName;
+			    var account_info_div=document.getElementById("account_info_div");
+			    account_info_div.innerHTML="<h3>"+user.displayName+"</h3><p>"+user.email+"</p>";
+			    account_img.onmouseenter=function(){
+			        account_info_div.style.display="block";
+			    };
+			    account_img.onmouseleave=function(){
+			        account_info_div.style.display="none";
+			    };
+			    console.log(user);
+			}
+		</script>
+    </body>
+</html>
