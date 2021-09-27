@@ -7,9 +7,13 @@
 	</head>
 	<body>
 		<h2>Página web en construcción</h2>
+		<div id="content1"></div>
 		<script type="module">
 			import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
 			import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-analytics.js";
+			import { getDatabase,ref,onValue } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-database.js";
+			import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"
+			var usuario;
 			const firebaseConfig = {
 				apiKey: "AIzaSyDw4kBHlKqI1WvLoa7hUpKwhfyYRUxBowU",
 				authDomain: "apps-rdp.firebaseapp.com",
@@ -22,6 +26,23 @@
 			};
 			const app = initializeApp(firebaseConfig);
 			const analytics = getAnalytics(app);
+			const auth=getAuth();
+			onAuthStateChanged(auth,function(user){
+				if(user){
+					usuario=user;
+				}
+				else{
+					usuario=null;
+				}
+			});
+			const db=getDatabase();
+			const starCountRef=ref(db,"config/on");
+			onValue(starCountRef,function(snapshot){
+				const data=snapshot.val();
+				if(data!=true){
+					document.write("<p style='font-size:20px;'>Error. No disponible. Puede ser que la web se esté actualizando. ¡Vuelve pronto!</p>");
+				}
+			});
 		</script>
 		<!-- Go to www.addthis.com/dashboard to customize your tools -->
 		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-6151cd02bfaecbfc"></script>
